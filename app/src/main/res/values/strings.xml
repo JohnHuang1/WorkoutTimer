@@ -1,0 +1,16 @@
+<resources>
+    <string name="app_name">WorkoutTimer</string>
+    <string name="name_string">Name</string>
+    <string name="create_string">Create</string>
+    <string name="add_button">Add a new item</string>
+    <string name="example_description_string">30 sec</string>
+    <string name="reps_string">Reps</string>
+    <string name="repetitions_string">Repetitions</string>
+    <string name="seconds_string">Seconds</string>
+    <string name="timer_string">Timer</string>
+    <string-array name="exercise_dropdown_choices">
+        <item>Exercise</item>
+        <item>Circuit</item>
+        <item>Rest</item>
+    </string-array>
+</resources>

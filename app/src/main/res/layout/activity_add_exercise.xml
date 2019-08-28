@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:context=".AddExerciseActivity">
+
+    <Spinner
+            android:id="@+id/spinnerExercise"
+            android:layout_width="284dp"
+            android:layout_height="43dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/editName"
+            app:layout_constraintVertical_bias="0.092" />
+
+    <EditText
+            android:id="@+id/editName"
+            android:layout_width="280dp"
+            android:layout_height="41dp"
+            android:ems="10"
+            android:inputType="textPersonName"
+            android:text="@string/name_string"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.496"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.088" />
+
+    <LinearLayout
+            android:layout_width="280dp"
+            android:layout_height="wrap_content"
+            android:weightSum="2"
+            app:layout_constraintBottom_toTopOf="@+id/txtPrompt"
+            app:layout_constraintEnd_toEndOf="@+id/spinnerExercise"
+            app:layout_constraintStart_toStartOf="@+id/spinnerExercise"
+            app:layout_constraintTop_toBottomOf="@+id/spinnerExercise">
+
+        <Button
+                android:id="@+id/btnReps"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/reps_string"
+                android:textColor="@drawable/button_text_color"
+                android:background="@drawable/bar_button_left"/>
+
+        <Button
+                android:id="@+id/btnTime"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/timer_string"
+                android:textColor="@drawable/button_text_color"
+                android:background="@drawable/bar_button_right"/>
+
+    </LinearLayout>
+
+    <EditText
+            android:id="@+id/editText2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:inputType="number"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/spinnerExercise"
+            app:layout_constraintVertical_bias="0.492" />
+
+    <TextView
+            android:id="@+id/txtPrompt"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingBottom="4dp"
+            android:text="Seconds"
+            android:textSize="24sp"
+            app:layout_constraintBottom_toTopOf="@+id/editText2"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.498"
+            app:layout_constraintStart_toStartOf="parent" />
+
+    <Button
+            android:id="@+id/btnSave"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingLeft="64dp"
+            android:paddingTop="16dp"
+            android:paddingRight="64dp"
+            android:paddingBottom="16dp"
+            android:text="Save"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/editText2"
+            app:layout_constraintVertical_bias="0.311" />
+</android.support.constraint.ConstraintLayout>
