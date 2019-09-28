@@ -46,7 +46,7 @@
                 android:layout_weight="1"
                 android:text="@string/reps_string"
                 android:textColor="@drawable/button_text_color"
-                android:background="@drawable/bar_button_left"/>
+                android:background="@drawable/bar_button_left_select" />
 
         <Button
                 android:id="@+id/btnTime"
@@ -55,15 +55,17 @@
                 android:layout_weight="1"
                 android:text="@string/timer_string"
                 android:textColor="@drawable/button_text_color"
-                android:background="@drawable/bar_button_right"/>
+                android:background="@drawable/bar_button_right_select"/>
 
     </LinearLayout>
 
     <EditText
-            android:id="@+id/editText2"
+            android:id="@+id/txtNumber"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:ems="10"
+            android:foregroundGravity="center"
+            android:gravity="center"
             android:inputType="number"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
@@ -78,7 +80,7 @@
             android:paddingBottom="4dp"
             android:text="Seconds"
             android:textSize="24sp"
-            app:layout_constraintBottom_toTopOf="@+id/editText2"
+            app:layout_constraintBottom_toTopOf="@+id/txtNumber"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.498"
             app:layout_constraintStart_toStartOf="parent" />
@@ -95,6 +97,6 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/editText2"
+            app:layout_constraintTop_toBottomOf="@+id/txtNumber"
             app:layout_constraintVertical_bias="0.311" />
 </android.support.constraint.ConstraintLayout>
