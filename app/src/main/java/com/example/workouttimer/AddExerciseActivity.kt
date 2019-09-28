@@ -30,9 +30,9 @@ class AddExerciseActivity : AppCompatActivity() {
                         btnReps.alpha = 1f
                         btnTime.isClickable = true
                         btnTime.alpha = 1f
-                        txtPrompt.text = getString(R.string.repetitions_string)
                     }
                     "Circuit" -> {
+                        btnReps.callOnClick()
                         btnReps.isClickable = false
                         btnReps.alpha = 1f
                         btnTime.isClickable = false
@@ -40,6 +40,7 @@ class AddExerciseActivity : AppCompatActivity() {
                         txtPrompt.text = getString(R.string.repetitions_string)
                     }
                     "Rest" -> {
+                        btnTime.callOnClick()
                         btnTime.isClickable = false
                         btnTime.alpha = 1f
                         btnReps.isClickable = false
@@ -62,6 +63,10 @@ class AddExerciseActivity : AppCompatActivity() {
             txtPrompt.text = getString(R.string.seconds_string)
             btnTime.isSelected = true
             btnReps.isSelected = false
+        }
+
+        btnSave.setOnClickListener{
+
         }
 
         btnReps.callOnClick()

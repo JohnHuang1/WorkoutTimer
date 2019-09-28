@@ -299,6 +299,14 @@ class DataBaseHandler(context: Context): SQLiteOpenHelper(context, DATABASE_NAME
         db.insert(TABLE_CIRCUITS, null, content)
     }
 
+    fun connectItem(primary: String,pID: Int, secondary: String, sID: Int){
+        val tableName = when(primary){
+            "Workout" ->
+            "Circuit" -> {}
+            else -> throw Exception("Wrong Primary Table")
+        }
+    }
+
     fun getWorkoutItemList(wkId: Int): MutableList<WorkoutItem>{
         val returnList: MutableList<WorkoutItem?> = ArrayList()
         val db = this.readableDatabase
