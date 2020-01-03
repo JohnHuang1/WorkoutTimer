@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.Intent
 import android.support.v7.util.DiffUtil
 import android.support.v7.widget.RecyclerView
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import android.widget.TextView
@@ -34,17 +35,17 @@ class WorkoutListRVAdapter(private val items : MutableList<Workout>, private val
     }
 
     private fun openWorkoutActivity(item: Workout){
-        val intent = Intent(context, DisplayExercisesActivity::class.java).apply {
-            putExtra("id", item.id)
-        }
-        context.startActivity(intent)
+        Log.d(TAG, "OpenWorkoutActivity() wkID = ${item.id}")
+        context.startActivity(Intent(context, DisplayExercisesActivity::class.java).apply {
+            putExtra("wkID", item.id)
+        })
     }
 
     fun insertItem(wk: Workout){
         val newList: MutableList<Workout> = ArrayList()
         newList.addAll(items)
         newList.add(wk)
-        val diffUtilCallback = DiffUtilCallback(items, newList)
+        val diffUtilCallback = DiffUtilCallback(items as MutableList<Any>, newList as MutableList<Any>)
         val diffResult = DiffUtil.calculateDiff(diffUtilCallback)
 
         items.add(wk)
@@ -53,7 +54,7 @@ class WorkoutListRVAdapter(private val items : MutableList<Workout>, private val
     }
 
     fun updateItem(newList: MutableList<Workout>){
-        val diffUtilCallback = DiffUtilCallback(items, newList)
+        val diffUtilCallback = DiffUtilCallback(items as MutableList<Any>, newList as MutableList<Any>)
         val diffResult = DiffUtil.calculateDiff(diffUtilCallback)
 
         items.clear()
@@ -66,11 +67,11 @@ class WorkoutListRVAdapter(private val items : MutableList<Workout>, private val
         val newList: MutableList<Workout> = ArrayList()
         newList.addAll(items)
         newList.remove(wk)
-        val diffUtilCallback = DiffUtilCallback(items, newList)
+        val diffUtilCallback = DiffUtilCallback(items as MutableList<Any>, newList as MutableList<Any>)
         val diffResult = DiffUtil.calculateDiff(diffUtilCallback)
 
         items.remove(wk)
-        val deleted = db.deleteWorkoutFromList(wk)
+        val deleted = db.deleteWorkout(wk.id)
         diffResult.dispatchUpdatesTo(this)
         return deleted
     }

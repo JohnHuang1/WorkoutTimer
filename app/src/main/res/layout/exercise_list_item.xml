@@ -1,34 +1,42 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        android:orientation="horizontal"
+        android:id="@+id/exerciseLinearLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:orientation="horizontal"
         android:weightSum="15">
-    <TextView
-            android:id="@+id/txtIndent"
-            android:layout_height="match_parent"
-            android:layout_width="wrap_content"
-            android:layout_weight="1"
-            android:background="@color/colorDarkGray">
 
-    </TextView>
+<!--    <TextView-->
+<!--            android:id="@+id/txtIndent"-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="match_parent"-->
+<!--            android:layout_weight="0"-->
+<!--            android:background="@color/colorDarkGray"></TextView>-->
 
     <TextView
             android:id="@+id/txtName"
             android:layout_width="0dp"
             android:layout_height="match_parent"
-            android:layout_weight="9"
-            android:textSize="15sp"
-            android:padding="10dp"
+            android:layout_weight="10"
             android:gravity="center_vertical"
-            android:text="@string/name_string"/>
+            android:padding="10dp"
+            android:text="@string/name_string"
+            android:textSize="15sp" />
+
+<!--    <TextView-->
+<!--            android:id="@+id/txtIndent2"-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="match_parent"-->
+<!--            android:layout_weight="1"-->
+<!--            android:background="@android:color/transparent"></TextView>-->
+
     <TextView
             android:id="@+id/txtDescription"
             android:layout_width="0dp"
             android:layout_height="match_parent"
-            android:textSize="15sp"
-            android:padding="5dp"
             android:layout_weight="5"
             android:gravity="center|center_vertical"
-            android:text="@string/example_description_string" />
+            android:padding="5dp"
+            android:text="@string/example_description_string"
+            android:textSize="15sp" />
 </LinearLayout>

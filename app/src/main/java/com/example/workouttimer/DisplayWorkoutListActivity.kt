@@ -7,6 +7,7 @@ import android.os.Bundle
 import android.support.design.widget.FloatingActionButton
 import android.support.v7.widget.LinearLayoutManager
 import android.view.View
+import android.widget.Toast
 import kotlinx.android.synthetic.main.activity_recycler_view.*
 
 private val TAG: String = DisplayWorkoutActivity::class.java.simpleName
@@ -15,9 +16,11 @@ class DisplayWorkoutActivity : AppCompatActivity() {
 
     private var workoutList: MutableList<Workout> = ArrayList()
     private val db = DataBaseHandler(this)
+    private var backPressed = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
         setContentView(R.layout.activity_recycler_view)
 
         workoutList = db.getWorkoutList()
@@ -30,8 +33,18 @@ class DisplayWorkoutActivity : AppCompatActivity() {
         addBtn.setOnClickListener{openAddWorkoutActivity(addBtn, this)}
     }
 
+    override fun onBackPressed() {
+        super.onBackPressed()
+        if(backPressed){
+            finish()
+        } else {
+            backPressed = true
+            Toast.makeText(this, "Press 'Back' button again to exit", Toast.LENGTH_SHORT).show()
+        }
+    }
+
     private fun openAddWorkoutActivity(btn: FloatingActionButton,context : Context){
-        btn.setExpanded(true)
+        btn.isExpanded = true
         context.startActivity(Intent(context, AddWorkoutActivity::class.java))
     }
 }
