@@ -5,7 +5,6 @@ import android.content.Context
 import android.database.Cursor
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
-import android.provider.ContactsContract
 import android.util.Log
 
 private val TAG:String = DataBaseHandler::class.java.simpleName
@@ -30,7 +29,7 @@ class DataBaseHandler(context: Context): SQLiteOpenHelper(context, DATABASE_NAME
     val COL_CIRCUIT_ID = "circuit_id"
     val COL_WORKOUT_ID = "workout_id"
     val COL_CRC_EXC_ID = "circuitOrExercise_id"
-    val COL_CIRCUIT_OR_EXERCISE = "circuitOrExercise_bool"
+    val COL_CIRCUIT_OR_EXERCISE = "circuitOrExercise_bool" // 0 = Exercise | 1 = Circuit
     val COL_REPS = "reps"
     val COL_TIME = "time"
     val COL_EXERCISE_ID = "exercise_id"
@@ -92,7 +91,7 @@ class DataBaseHandler(context: Context): SQLiteOpenHelper(context, DATABASE_NAME
 //        onCreate(db)
     }
 
-    fun remakeTable(db: SQLiteDatabase, tblName: String){
+    private fun remakeTable(db: SQLiteDatabase, tblName: String){
         var columns = ""
         var params = ""
         when(tblName){
@@ -116,7 +115,6 @@ class DataBaseHandler(context: Context): SQLiteOpenHelper(context, DATABASE_NAME
                 columns = "$COL_ID, $COL_NAME, $COL_REPS, $COL_TIME"
                 params = exerciseTblParams
             }
-            else -> null
         }
         if(checkTableExists(db, tblName)){
             db.execSQL("CREATE TEMPORARY TABLE ${tblName + "_temp"} $params")
@@ -131,7 +129,7 @@ class DataBaseHandler(context: Context): SQLiteOpenHelper(context, DATABASE_NAME
 
     }
 
-    fun checkTableExists(db: SQLiteDatabase, tblName: String): Boolean{
+    private fun checkTableExists(db: SQLiteDatabase, tblName: String): Boolean{
         val result = db.rawQuery("SELECT name FROM sqlite_master WHERE name= '$tblName'", null)
         val exists = result.moveToFirst()
         result.close()
@@ -143,8 +141,41 @@ class DataBaseHandler(context: Context): SQLiteOpenHelper(context, DATABASE_NAME
         val content = ContentValues()
         content.put(COL_NAME, wk.name)
         content.put(COL_ID, wk.id)
-        content.put(COL_DISPLAY_ORDER, wk.display_id)
+        content.put(COL_DISPLAY_ORDER, wk.displayID)
         db.insert(TABLE_WORKOUTS, null, content)
+    }
+
+    fun updateCircuit(crc: Circuit){
+        val db = this.writableDatabase
+        val content = ContentValues()
+        content.put(COL_NAME, crc.name)
+        content.put(COL_REPS, crc.reps)
+        db.update(TABLE_CIRCUITS, content, "$COL_ID = ?", arrayOf(crc.id.toString()))
+    }
+    fun updateCircuit(crcID: Int, name: String): Int{
+        val db = this.writableDatabase
+        val content = ContentValues()
+        content.put(COL_NAME, name)
+        return db.update(TABLE_CIRCUITS, content, "$COL_ID = ?", arrayOf(crcID.toString()))
+    }
+
+    fun updateCircuitItemList(list: MutableList<WorkoutItem>, crcID: Int){
+        val db = this.writableDatabase
+        db.delete(TABLE_CRC_EXC_BRIDGE, "$COL_CIRCUIT_ID = $crcID", null)
+        for(item in list){
+            val content = ContentValues()
+            content.put(COL_CIRCUIT_ID, crcID)
+            content.put(COL_EXERCISE_ID, item.id)
+            content.put(COL_DISPLAY_ORDER, item.displayID)
+            db.insert(TABLE_CRC_EXC_BRIDGE, null, content)
+        }
+    }
+
+    fun updateWorkout(wkID: Int, name: String): Int{
+        val db = this.writableDatabase
+        val content = ContentValues()
+        content.put(COL_NAME, name)
+        return db.update(TABLE_WORKOUTS, content, "$COL_ID = ?", arrayOf(wkID.toString()))
     }
 
     fun updateWorkoutList(wkList: MutableList<Workout>){
@@ -154,12 +185,35 @@ class DataBaseHandler(context: Context): SQLiteOpenHelper(context, DATABASE_NAME
             val content = ContentValues()
             content.put(COL_NAME, wk.name)
             content.put(COL_ID, wk.id)
-            content.put(COL_DISPLAY_ORDER, wk.display_id)
+            content.put(COL_DISPLAY_ORDER, wk.displayID)
             db.insert(TABLE_WORKOUTS, null, content)
         }
     }
 
-    fun getExercise(excID: Int): Exercise?{
+    fun updateWorkoutItemList(list: MutableList<WorkoutItem>, wkID: Int){
+        val db = this.writableDatabase
+        db.delete(TABLE_WK_CRC_EXC_BRIDGE, "$COL_WORKOUT_ID = $wkID", null)
+        for(item in list){
+            val content = ContentValues()
+            content.put(COL_WORKOUT_ID, wkID)
+            content.put(COL_CIRCUIT_OR_EXERCISE, if(item::class == Exercise::class) 0 else 1)
+            content.put(COL_CRC_EXC_ID, item.id)
+            content.put(COL_DISPLAY_ORDER, item.displayID)
+            db.insert(TABLE_WK_CRC_EXC_BRIDGE, null, content)
+        }
+    }
+
+    fun updateExercise(exc: Exercise){
+        val db = this.writableDatabase
+        val content = ContentValues()
+        content.put(COL_ID, exc.id)
+        content.put(COL_NAME, exc.name)
+        content.put(COL_TIME, exc.time)
+        content.put(COL_REPS, exc.reps)
+        db.update(TABLE_EXERCISES, content, "$COL_ID = ${exc.id}", null)
+    }
+
+    fun getExercise(excID: Int): Exercise{
         val db = this.readableDatabase
         val result = db.rawQuery("SELECT * FROM $TABLE_EXERCISES WHERE $COL_ID = $excID", null)
         val exercise = when(result.moveToFirst()){
@@ -169,13 +223,13 @@ class DataBaseHandler(context: Context): SQLiteOpenHelper(context, DATABASE_NAME
                 result.getInt(result.getColumnIndex(COL_REPS)),
                 result.getLong(result.getColumnIndex(COL_TIME))
             )
-            false -> null
+            false -> Exercise(-1, "", null, null)
         }
         result.close()
         return exercise
     }
 
-    fun getCircuit(crcID: Int): Circuit?{
+    fun getCircuit(crcID: Int): Circuit{
         val db = this.readableDatabase
         val result = db.rawQuery("SELECT * FROM $TABLE_CIRCUITS WHERE $COL_ID = $crcID", null)
         val circuit = when(result.moveToFirst()){
@@ -184,10 +238,10 @@ class DataBaseHandler(context: Context): SQLiteOpenHelper(context, DATABASE_NAME
                 result.getString(result.getColumnIndex(COL_NAME)),
                 result.getInt(result.getColumnIndex(COL_REPS))
             )
-            false -> return null
+            false -> Circuit()
         }
         result.close()
-        val excList: MutableList<Exercise> = ArrayList()
+        val excList: MutableList<WorkoutItem> = mutableListOf()
         val resultList = db.rawQuery("SELECT * FROM $TABLE_CRC_EXC_BRIDGE WHERE $COL_CIRCUIT_ID = $crcID ORDER BY $COL_DISPLAY_ORDER", null)
         if(resultList.moveToFirst()){
             do{
@@ -195,7 +249,7 @@ class DataBaseHandler(context: Context): SQLiteOpenHelper(context, DATABASE_NAME
                 val exercise = getExercise(id) as Exercise
                 exercise.displayID = resultList.getInt(resultList.getColumnIndex(COL_DISPLAY_ORDER))
                 exercise.circuitID = circuit.id
-                excList.add(exercise)
+                excList.add(exercise as WorkoutItem)
             } while(resultList.moveToNext())
         }
         resultList.close()
@@ -222,13 +276,56 @@ class DataBaseHandler(context: Context): SQLiteOpenHelper(context, DATABASE_NAME
         return returnList
     }
 
-    fun deleteWorkoutFromList(wk: Workout): Int{
+    fun deleteCircuit(crc: Circuit, wkID: Int): Int{
         val db = this.writableDatabase
-        val deleteResult = db.delete(TABLE_WORKOUTS, "$COL_ID = ${wk.id}", null)
+        val deleteResult = db.delete(TABLE_CIRCUITS, "$COL_ID = ${crc.id}", null)
+        db.delete(TABLE_WK_CRC_EXC_BRIDGE, "$COL_WORKOUT_ID = $wkID AND $COL_CRC_EXC_ID = ${crc.id}", null)
+        db.delete(TABLE_CRC_EXC_BRIDGE, "$COL_CIRCUIT_ID = ${crc.id}", null)
+        val list = getWorkoutItemList(wkID)
+        for(item in list){
+            if(item.displayID > crc.displayID){
+                val content = ContentValues()
+                content.put(COL_DISPLAY_ORDER, item.displayID - 1)
+                db.update(TABLE_WK_CRC_EXC_BRIDGE, content, "$COL_WORKOUT_ID = $wkID AND $COL_CRC_EXC_ID = ${item.id}", null)
+            }
+        }
+        return deleteResult
+    }
+
+    fun deleteExercise(exc: Exercise, wkId: Int?, crcId: Int = -1): Int{
+        val db = this.writableDatabase
+        var deleteResult = db.delete(TABLE_EXERCISES, "$COL_ID = ${exc.id}", null)
+        if(wkId != null){
+            deleteResult += db.delete(TABLE_WK_CRC_EXC_BRIDGE, "$COL_WORKOUT_ID = $wkId AND $COL_CRC_EXC_ID = ${exc.id}", null)
+            Log.d(TAG, "Deleted Exercise ${exc.id} from Workout $wkId")
+        } else {
+            deleteResult += db.delete(TABLE_CRC_EXC_BRIDGE, "$COL_CIRCUIT_ID = $crcId AND $COL_EXERCISE_ID = ${exc.id}", null)
+            Log.d(TAG, "Deleted Exercise ${exc.id} from Circuit $crcId")
+        }
+        val list: MutableList<WorkoutItem> = if(wkId != null) getWorkoutItemList(wkId) else getCircuit(crcId).excList
+        for(item in list){
+            if(item.displayID > exc.displayID){
+                val content = ContentValues()
+                content.put(COL_DISPLAY_ORDER, item.displayID - 1)
+                if(wkId != null) {
+                    db.update(TABLE_WK_CRC_EXC_BRIDGE, content, "$COL_WORKOUT_ID = $wkId AND $COL_CRC_EXC_ID = ${item.id}", null)
+                    Log.d(TAG, "updated item ${item.id} from Workout $wkId")
+                } else {
+                    db.update(TABLE_CRC_EXC_BRIDGE, content, "$COL_CIRCUIT_ID = $crcId AND $COL_EXERCISE_ID = ${item.id}", null)
+                    Log.d(TAG, "updated item ${item.id} from Workout $crcId")
+                }
+            }
+        }
+        return deleteResult
+    }
+
+    fun deleteWorkout(wkID: Int): Int{
+        val db = this.writableDatabase
+        val deleteResult = db.delete(TABLE_WORKOUTS, "$COL_ID = ${wkID}", null)
         val list: MutableList<Workout> = getWorkoutList()
         var counter = 0
         for(item in list){
-            item.display_id = counter++
+            item.displayID = counter++
         }
         updateWorkoutList(list)
         return deleteResult
@@ -261,8 +358,24 @@ class DataBaseHandler(context: Context): SQLiteOpenHelper(context, DATABASE_NAME
         return temp
     }
 
-    fun getNextDisplayId(): Int{
+    fun getNextWorkoutsDisplayId(): Int{
         val temp = getIDArray(COL_DISPLAY_ORDER, TABLE_WORKOUTS,"",  COL_DISPLAY_ORDER)
+        return when(temp.size <= 0){
+            true -> 0
+            false -> temp[temp.size - 1] + 1
+        }
+    }
+
+    fun getNextWorkoutItemDisplayID(wkID: Int): Int{
+        val temp = getIDArray(COL_DISPLAY_ORDER, TABLE_WK_CRC_EXC_BRIDGE,"$COL_WORKOUT_ID = $wkID",  COL_DISPLAY_ORDER)
+        return when(temp.size <= 0){
+            true -> 0
+            false -> temp[temp.size - 1] + 1
+        }
+    }
+
+    fun getNextCircuitItemDisplayID(crcID: Int): Int{
+        val temp = getIDArray(COL_DISPLAY_ORDER, TABLE_CRC_EXC_BRIDGE,"$COL_CIRCUIT_ID = $crcID",  COL_DISPLAY_ORDER)
         return when(temp.size <= 0){
             true -> 0
             false -> temp[temp.size - 1] + 1
@@ -280,7 +393,7 @@ class DataBaseHandler(context: Context): SQLiteOpenHelper(context, DATABASE_NAME
         return name
     }
 
-    fun addExcercise(exc: Exercise){
+    fun addExercise(exc: Exercise){
         val db = this.writableDatabase
         val content = ContentValues()
         content.put(COL_ID, exc.id)
@@ -299,32 +412,59 @@ class DataBaseHandler(context: Context): SQLiteOpenHelper(context, DATABASE_NAME
         db.insert(TABLE_CIRCUITS, null, content)
     }
 
-    fun connectItem(primary: String,pID: Int, secondary: String, sID: Int){
-        val tableName = when(primary){
-            "Workout" ->
-            "Circuit" -> {}
-            else -> throw Exception("Wrong Primary Table")
+    fun connectItem(primary: String, pID: Int, secondary: String, sID: Int){
+        val db = this.writableDatabase
+        val content = ContentValues()
+        when(primary){
+            "Workout" ->{
+                content.put(COL_CIRCUIT_OR_EXERCISE, if(secondary == "Circuit") 1 else 0)
+                content.put(COL_WORKOUT_ID, pID)
+                content.put(COL_CRC_EXC_ID, sID)
+                content.put(COL_DISPLAY_ORDER, getNextWorkoutItemDisplayID(pID))
+                db.insert(TABLE_WK_CRC_EXC_BRIDGE, null, content)
+                Log.d(TAG, "connectItem() Workout $pID Connected to $secondary id = $sID")
+            }
+            "Circuit" ->{
+                content.put(COL_CIRCUIT_ID, pID)
+                content.put(COL_EXERCISE_ID, sID)
+                content.put(COL_DISPLAY_ORDER, getNextCircuitItemDisplayID(pID))
+                db.insert(TABLE_CRC_EXC_BRIDGE, null, content)
+                Log.d(TAG, "connectItem() Circuit $pID Connected to $secondary id = $sID")
+            }
         }
     }
 
     fun getWorkoutItemList(wkId: Int): MutableList<WorkoutItem>{
-        val returnList: MutableList<WorkoutItem?> = ArrayList()
+        val returnList: MutableList<WorkoutItem> = mutableListOf()
         val db = this.readableDatabase
         val result = db.query(TABLE_WK_CRC_EXC_BRIDGE, null, "$COL_WORKOUT_ID = $wkId", null, null, null, COL_DISPLAY_ORDER)
         if(result.moveToFirst()){
             do{
                 val id = result.getInt(result.getColumnIndex(COL_CRC_EXC_ID))
-                val item = when(result.getInt(result.getColumnIndex(COL_CIRCUIT_OR_EXERCISE))){
-                    0 -> getExercise(id)
-                    1 -> getCircuit(id)
+//                val item = when(result.getInt(result.getColumnIndex(COL_CIRCUIT_OR_EXERCISE))){
+//                    0 -> getExercise(id)
+//                    1 -> getCircuit(id)
+//                    else -> throw Exception("BOOLEAN NOT RIGHT")
+//                }
+                var item: WorkoutItem
+                when(result.getInt(result.getColumnIndex(COL_CIRCUIT_OR_EXERCISE))){
+                    0 -> {
+                        item = getExercise(id)
+                        Log.d(TAG, "getWorkoutItemList() Exercise Retrieved id: ${item.id} name: ${item.name} reps: ${item.reps} time: ${item.time}")
+                    }
+                    1 -> {
+                        item = getCircuit(id)
+                        Log.d(TAG, "getWorkoutItemList() Circuit Retrieved")
+                    }
                     else -> throw Exception("BOOLEAN NOT RIGHT")
                 }
-                item?.displayID = result.getInt(result.getColumnIndex(COL_DISPLAY_ORDER))
+                item.displayID = result.getInt(result.getColumnIndex(COL_DISPLAY_ORDER))
                 returnList.add(item)
             }while(result.moveToNext())
         }
         result.close()
-        return returnList as MutableList<WorkoutItem>
+        Log.d("DataBaseHandler", "getWorkoutItemList() Called")
+        return returnList
     }
 
 

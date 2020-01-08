@@ -11,6 +11,18 @@
     <string-array name="exercise_dropdown_choices">
         <item>Exercise</item>
         <item>Circuit</item>
-        <item>Rest</item>
     </string-array>
+    <string-array name="exercise_dropdown_choices_exercise">
+        <item>Exercise</item>
+    </string-array>
+    <string-array name="exercise_dropdown_choices_circuit">
+        <item>Circuit</item>
+    </string-array>
+    <string name="save_changes">Would you like to save your changes?</string>
+    <string name="yes_string">Yes</string>
+    <string name="no_string">No</string>
+    <string name="save_string">Save</string>
+    <string name="cancel_string">Cancel</string>
+    <string name="change_name_string">Change Name</string>
+    <string name="confirm_delete_string">Are you sure you want to delete?</string>
 </resources>

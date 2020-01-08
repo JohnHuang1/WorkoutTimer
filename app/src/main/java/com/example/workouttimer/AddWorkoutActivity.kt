@@ -7,7 +7,7 @@ import kotlinx.android.synthetic.main.activity_add_workout.*
 
 class AddWorkoutActivity : AppCompatActivity() {
 
-    val db = DataBaseHandler(this)
+    private val db = DataBaseHandler(this)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -19,7 +19,7 @@ class AddWorkoutActivity : AppCompatActivity() {
     private fun createBtnListener(){
         val text = txtName.text.toString()
         if(text != ""){
-            db.addWorkoutToList(Workout(text, db.getAvailableId(db.TABLE_WORKOUTS), db.getNextDisplayId()))
+            db.addWorkoutToList(Workout(text, db.getAvailableId(db.TABLE_WORKOUTS), db.getNextWorkoutsDisplayId()))
             this.startActivity(Intent(this, DisplayWorkoutActivity:: class.java))
         }
     }

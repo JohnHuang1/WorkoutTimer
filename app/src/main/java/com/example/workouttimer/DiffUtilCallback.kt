@@ -2,7 +2,8 @@ package com.example.workouttimer
 
 import android.support.v7.util.DiffUtil
 
-class DiffUtilCallback(private val oldList: MutableList<Workout>, private val newList: MutableList<Workout>): DiffUtil.Callback(){
+class DiffUtilCallback(private val oldList: MutableList<Any>, private val newList: MutableList<Any>): DiffUtil.Callback(){
+
     override fun areItemsTheSame(oldPosition: Int, newPosition: Int): Boolean {
         return oldPosition == newPosition
     }
