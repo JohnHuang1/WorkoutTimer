@@ -7,18 +7,89 @@
         tools:context=".ShowWorkoutActivity"
         android:background="@color/colorDarkGray">
 
-    <android.support.v7.widget.AppCompatTextView
+    <android.support.v7.widget.AppCompatButton
+            android:id="@+id/btnBigCircle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:background="@drawable/big_circle"
+            android:gravity="center_vertical"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
-    <view
+
+    <TextView
+            android:id="@+id/txtCount"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:background="@drawable/big_ring"
-            />
+            android:fontFamily="sans-serif-medium"
+            android:textColor="@android:color/white"
+            android:textSize="80sp"
+            android:visibility="visible"
+            app:layout_constraintBottom_toBottomOf="@+id/btnBigCircle"
+            app:layout_constraintEnd_toEndOf="@+id/btnBigCircle"
+            app:layout_constraintStart_toStartOf="@+id/btnBigCircle"
+            app:layout_constraintTop_toTopOf="@+id/btnBigCircle"
+            tools:text="30" />
+
+    <TextView
+            android:id="@+id/txtItemName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@android:color/white"
+            android:textSize="36sp"
+            app:layout_constraintBottom_toTopOf="@+id/txtCount"
+            app:layout_constraintEnd_toEndOf="@+id/btnBigCircle"
+            app:layout_constraintStart_toStartOf="@+id/btnBigCircle"
+            app:layout_constraintTop_toTopOf="@+id/btnBigCircle"
+            app:layout_constraintVertical_bias="1.0"
+            tools:text="Pushups" />
+
+    <TextView
+            android:id="@+id/txtCountType"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@android:color/white"
+            android:textSize="30sp"
+            app:layout_constraintBottom_toBottomOf="@+id/btnBigCircle"
+            app:layout_constraintEnd_toEndOf="@+id/btnBigCircle"
+            app:layout_constraintStart_toStartOf="@+id/btnBigCircle"
+            app:layout_constraintTop_toBottomOf="@+id/txtCount"
+            app:layout_constraintVertical_bias="0.0"
+            tools:text="@string/seconds_string" />
+
+    <TextView
+            android:id="@+id/textView1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/total_time"
+            android:textColor="@android:color/white"
+            android:textSize="24sp"
+            app:layout_constraintBottom_toTopOf="@+id/btnBigCircle"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+            android:id="@+id/txtTime"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@android:color/white"
+            android:textSize="30sp"
+            app:layout_constraintBottom_toTopOf="@+id/btnBigCircle"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/textView1"
+            app:layout_constraintVertical_bias="0.0"
+            tools:text="05:32" />
+
+    <Button
+            android:id="@+id/btnPause"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/btnBigCircle" />
 
 </android.support.constraint.ConstraintLayout>
