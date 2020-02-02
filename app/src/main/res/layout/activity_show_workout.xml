@@ -74,6 +74,7 @@
             android:id="@+id/txtTime"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:text="04:43"
             android:textColor="@android:color/white"
             android:textSize="30sp"
             app:layout_constraintBottom_toTopOf="@+id/btnBigCircle"
@@ -84,12 +85,15 @@
             tools:text="05:32" />
 
     <Button
-            android:id="@+id/btnPause"
+            android:id="@+id/btnStart"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:text="Start"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.498"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/btnBigCircle" />
+            app:layout_constraintTop_toBottomOf="@+id/btnBigCircle"
+            app:layout_constraintVertical_bias="0.492" />
 
 </android.support.constraint.ConstraintLayout>

@@ -26,4 +26,7 @@
     <string name="change_name_string">Change Name</string>
     <string name="confirm_delete_string">Are you sure you want to delete?</string>
     <string name="total_time">Total Time</string>
+    <string name="you_are_finished">You Are Finished!</string>
+    <string name="Congratulations">Congratulations!</string>
+    <string name="Return">Return</string>
 </resources>

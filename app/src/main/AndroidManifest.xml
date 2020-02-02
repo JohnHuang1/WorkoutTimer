@@ -9,7 +9,7 @@
             android:roundIcon="@mipmap/ic_launcher_round"
             android:supportsRtl="true"
             android:theme="@style/AppTheme">
-        <activity android:name=".ShowWorkoutActivity"></activity>
+        <activity android:name=".ShowWorkoutActivity"/>
         <activity android:name=".AddExerciseActivity" />
         <activity android:name=".AddWorkoutActivity" />
         <activity android:name=".DisplayExercisesActivity" />
@@ -20,6 +20,9 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <service
+            android:name=".BackgroundWorkoutService"
+            android:exported="false" />
     </application>
 
 </manifest>

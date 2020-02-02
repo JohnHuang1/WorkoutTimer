@@ -54,7 +54,7 @@ class DisplayExercisesActivity: AppCompatActivity() {
     override fun onOptionsItemSelected(item: MenuItem?): Boolean {
         when(item?.itemId){
             R.id.play_button -> {
-
+                this.startActivity(Intent(this, ShowWorkoutActivity::class.java).putExtra("wkID", wkId))
             }
             R.id.edit_button -> {
                 val inflater = layoutInflater.inflate(R.layout.edit_text_box, null)

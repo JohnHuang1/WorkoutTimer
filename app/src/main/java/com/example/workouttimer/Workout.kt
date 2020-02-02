@@ -25,6 +25,10 @@ class Exercise: WorkoutItem{
         this.time = time
         this.circuitID = circuitID
     }
+
+    override fun toString(): String {
+        return "ID: $id | name: $name | reps: $reps | time: $time | displayID: $displayID | circuitID: $circuitID"
+    }
 }
 
 class Circuit: WorkoutItem{

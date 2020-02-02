@@ -34,7 +34,6 @@ class DisplayWorkoutActivity : AppCompatActivity() {
     }
 
     override fun onBackPressed() {
-        super.onBackPressed()
         if(backPressed){
             finish()
         } else {
