@@ -20,7 +20,7 @@ class Exercise: WorkoutItem{
     var time: Long? = null
     var circuitID: Int = -1
 
-    constructor(id: Int, name: String, reps: Int?, time: Long?, displayID: Int = -1, circuitID: Int = -1): super(name, id, displayID){
+    constructor(id: Int = -1, name: String = "", reps: Int? = null, time: Long? = null, displayID: Int = -1, circuitID: Int = -1): super(name, id, displayID){
         this.reps = reps
         this.time = time
         this.circuitID = circuitID

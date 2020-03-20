@@ -21,7 +21,7 @@
             </intent-filter>
         </activity>
         <service
-            android:name=".BackgroundWorkoutService"
+            android:name=".WorkoutService"
             android:exported="false" />
     </application>
 

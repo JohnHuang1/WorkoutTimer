@@ -1,10 +1,9 @@
 package com.example.workouttimer
 
-import android.content.Intent
+import android.content.*
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
-import android.os.Message
-import android.os.Messenger
+import android.os.IBinder
 import android.support.v4.content.LocalBroadcastManager
 import android.util.Log
 import android.widget.Toast
@@ -13,52 +12,112 @@ import kotlinx.android.synthetic.main.activity_show_workout.*
 private const val TAG = "ShowWorkoutActivity"
 
 class ShowWorkoutActivity : AppCompatActivity(), WorkoutHandler.AppReceiver {
-    private var handler: WorkoutHandler? = null
     private var backPressed = false
+    var wkID = -1
+    private var bound = false
+    private lateinit var workoutService : WorkoutService
+    private lateinit var broadcastReceiver: BroadcastReceiver
+
+    val connection = object: ServiceConnection {
+        override fun onServiceConnected( className: ComponentName?, iBinder: IBinder?) {
+            workoutService = (iBinder as WorkoutService.LocalBinder).getService()
+            bound = true
+        }
+        override fun onServiceDisconnected(p0: ComponentName?) {
+            bound = false
+        }
+    }
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_show_workout)
 
-        val wkID = this.intent.getIntExtra("wkID", -1)
-        registerService(wkID)
+        wkID = this.intent.getIntExtra("wkID", -1)
+        supportActionBar?.hide()
+        actionBar?.hide()
+
+
+        Intent(this, WorkoutService::class.java).also {
+            intent -> startService(intent.putExtra("wkID", wkID))
+        }
+
+        broadcastReceiver = object : BroadcastReceiver() {
+            override fun onReceive(context: Context?, intent: Intent?) {
+                val name = intent?.getStringExtra("item_name")
+                val reps = intent?.getIntExtra("reps", -1)
+                val time = intent?.getLongExtra("time", -1)
+                val timeLeft = intent?.getIntExtra(WORK_TICK, -1)
+                val last = intent?.getIntExtra("last_exercise", -1)
+                val end = intent?.getIntExtra("workout_finished", -1)
+                val circuitName = intent?.getStringExtra("circuit_name")
+                val circuitRep = intent?.getIntExtra("circuit_rep", -1)
+                Log.d(TAG, "onReceive Intent: name = $name | reps = $reps | time = $time")
+                if(name != null){
+                    txtItemName.text = name
+                }
+                if(reps != -1){
+                    txtCount.text = reps.toString()
+                    txtCountType.text = getString(R.string.reps_string)
+                    btnStart.text = "Next"
+                }
+                if(time != (-1).toLong()){
+                    txtCount.text = time.toString()
+                    txtCountType.text = getString(R.string.seconds_string)
+                    btnStart.text = "Pause"
+                }
+                if(timeLeft != -1){
+                    txtCount.text = timeLeft.toString()
+                }
+                if(end == 1){
+                    endWorkout()
+                }
+                if(last == 1 && txtCountType.text == getString(R.string.reps_string)){
+                    btnStart.text = "Finish"
+                }
+                if(circuitRep != -1) {
+                    txtCircuitRep.text = if(circuitRep != 0) getString(R.string.round, circuitRep) else ""
+                }
+                if(circuitName != null){
+                    txtCircuitName.text = if(circuitName != "") getString(R.string.circuit_colon, circuitName) else ""
+                }
+            }
+        }
 
         btnStart.setOnClickListener{
-            val intent = Intent(applicationContext, BackgroundWorkoutService::class.java)
             when(btnStart.text){
                 "Pause"->{
-                    intent.putExtra("action", "pause")
+                    workoutService.pause()
                     btnStart.text = "Resume"
                 }
                 "Resume"->{
-                    intent.putExtra("action", "resume")
+                    workoutService.resume()
                     btnStart.text = "Pause"
                 }
                 "Stop"->{
-                    intent.putExtra("action", "stop")
+                    workoutService.stop()
                     btnStart.text = "Return"
                 }
                 "Return"->{
-                    backPressed = false
                     this.onBackPressed()
                 }
                 "Start"->{
-                    intent.putExtra("action", "start")
+                    workoutService.start()
                     btnStart.text = "Pause"
                 }
+                "Next"->{
+                    workoutService.next()
+                }
+                "Finish"->{
+                    endWorkout()
+                }
             }
-            intent.apply{
-                putExtra("handler", Messenger(handler))
-                putExtra("wkID", wkID)
-            }
-            startService(intent)
-
         }
     }
 
     override fun onBackPressed() {
         if(backPressed){
+            workoutService.stop()
             super.onBackPressed()
         } else {
             Toast.makeText(this, "Press Again to Exit Workout", Toast.LENGTH_SHORT).show()
@@ -66,38 +125,27 @@ class ShowWorkoutActivity : AppCompatActivity(), WorkoutHandler.AppReceiver {
         }
     }
 
-    override fun onReceiveResult(msg: Message) {
-        Log.d(TAG, "onReceiveResult()")
-        val count = msg.arg1
-        val exc = msg.obj as Exercise?
-        if(count != -1){
-            Log.d(TAG, "onReceiveResult() count = $count")
-            if(count >= 0) txtCount.text = count.toString()
-            if(exc != null){
-                txtItemName.text = exc.name
-                txtCountType.text = when(exc.time){
-                    null-> getString(R.string.reps_string)
-                    0.toLong()-> getString(R.string.reps_string)
-                    else-> getString(R.string.seconds_string)
-                }
-                Log.d(TAG, "onReceiveResult() Obj not null")
-            }
-        } else {
-            txtItemName.text = getString(R.string.Congratulations)
-            txtCountType.text = getString(R.string.you_are_finished)
-            btnStart.text = getString(R.string.Return)
-            Log.d(TAG, "onReceiveResult() Finish Reached")
+    override fun onStart() {
+        super.onStart()
+        Intent(this, WorkoutService::class.java).also { intent ->
+            bindService(intent, connection, Context.BIND_AUTO_CREATE)
         }
+        LocalBroadcastManager.getInstance(this).registerReceiver(broadcastReceiver, IntentFilter(WORK_UPDATE))
     }
 
-    private fun registerService(wkID: Int){
-        val intent = Intent(applicationContext, BackgroundWorkoutService::class.java)
-        handler = WorkoutHandler(this)
-        intent.apply{
-            putExtra("handler", Messenger(handler))
-            putExtra("wkID", wkID)
-        }
-        startService(intent)
+    override fun onStop(){
+        unbindService(connection)
+        LocalBroadcastManager.getInstance(this).unregisterReceiver(broadcastReceiver)
+        bound = false
+        super.onStop()
+    }
+
+    fun endWorkout(){
+        txtItemName.text = getString(R.string.you_are_finished)
+        txtCountType.text = getString(R.string.Congratulations)
+        txtCount.text = ""
+        backPressed = true
+        btnStart.text = "Return"
     }
 
 }

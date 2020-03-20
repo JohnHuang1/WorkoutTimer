@@ -29,4 +29,6 @@
     <string name="you_are_finished">You Are Finished!</string>
     <string name="Congratulations">Congratulations!</string>
     <string name="Return">Return</string>
+    <string name="circuit_colon">Circuit: %1$s</string>
+    <string name="round">Round %1$d</string>
 </resources>

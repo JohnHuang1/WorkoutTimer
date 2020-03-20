@@ -5,7 +5,8 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         tools:context=".ShowWorkoutActivity"
-        android:background="@color/colorDarkGray">
+        android:background="@color/colorDarkGray"
+        >
 
     <android.support.v7.widget.AppCompatButton
             android:id="@+id/btnBigCircle"
@@ -59,30 +60,29 @@
             tools:text="@string/seconds_string" />
 
     <TextView
-            android:id="@+id/textView1"
+            android:id="@+id/txtCircuitName"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/total_time"
             android:textColor="@android:color/white"
             android:textSize="24sp"
             app:layout_constraintBottom_toTopOf="@+id/btnBigCircle"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="@string/circuit_colon" />
 
     <TextView
-            android:id="@+id/txtTime"
+            android:id="@+id/txtCircuitRep"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="04:43"
             android:textColor="@android:color/white"
             android:textSize="30sp"
             app:layout_constraintBottom_toTopOf="@+id/btnBigCircle"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/textView1"
+            app:layout_constraintTop_toBottomOf="@+id/txtCircuitName"
             app:layout_constraintVertical_bias="0.0"
-            tools:text="05:32" />
+            tools:text="@string/round" />
 
     <Button
             android:id="@+id/btnStart"
